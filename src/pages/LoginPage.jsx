@@ -3,7 +3,7 @@ import { Navigate, useLocation, useNavigate, useSearchParams } from "react-route
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function LoginPage() {
-  const { currentUser, firebaseReady, login, signUp } = useAuth();
+  const { currentUser, membership, firebaseReady, login, signUp } = useAuth();
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,9 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const destination = searchParams.get("redirect") || location.state?.from?.pathname || "/dashboard";
 
-  if (currentUser) return <Navigate to={destination} replace />;
+  if (currentUser) {
+    return <Navigate to={membership?.needsOrder ? "/order" : destination} replace />;
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -38,7 +40,7 @@ export default function LoginPage() {
       <div className="auth-copy">
         <span className="eyebrow">Beginner friendly</span>
         <h1>Practice BPO interviews with your voice.</h1>
-        <p>Answer common call center questions, record yourself, and compare with simple sample answers made for first-time applicants.</p>
+        <p>Answer common call center questions, record yourself, and use your 1-day trial before moving to the monthly plan.</p>
       </div>
       <form className="auth-card" onSubmit={handleSubmit}>
         <div className="segmented-control" aria-label="Authentication mode">
@@ -87,7 +89,7 @@ export default function LoginPage() {
         </label>
         {error ? <p className="error-text">{error}</p> : null}
         <button className="primary-button full-width" disabled={loading || !firebaseReady} type="submit">
-          {loading ? "Please wait..." : mode === "login" ? "Log in" : "Create account"}
+          {loading ? "Please wait..." : mode === "login" ? "Log in" : "Create account and start 1-day trial"}
         </button>
       </form>
     </section>

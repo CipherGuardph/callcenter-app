@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SessionSummary from "../components/SessionSummary.jsx";
+import SubscriptionStatusBanner from "../components/SubscriptionStatusBanner.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { getLocalAnswers, getLocalSession } from "../services/localSessions.js";
 import { getSession, getSessionAnswers, saveLocalSessionToCloud } from "../services/sessions.js";
@@ -63,6 +64,7 @@ export default function SessionPage() {
 
   return (
     <div className="stack">
+      <SubscriptionStatusBanner />
       <section className="content-section">
         <div className="section-heading">
           <span className="eyebrow">Session summary</span>

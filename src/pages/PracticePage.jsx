@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import InterviewCard from "../components/InterviewCard.jsx";
 import RecorderControls from "../components/RecorderControls.jsx";
+import SubscriptionStatusBanner from "../components/SubscriptionStatusBanner.jsx";
 import SuggestedAnswerPanel from "../components/SuggestedAnswerPanel.jsx";
 import { interviewQuestions } from "../data/questions.js";
 import { useMediaRecorder } from "../hooks/useMediaRecorder.js";
@@ -112,6 +113,7 @@ export default function PracticePage() {
 
   return (
     <div className="practice-layout">
+      <SubscriptionStatusBanner />
       <section className="practice-header">
         <div>
           <span className="eyebrow">Practice mode</span>

@@ -67,6 +67,16 @@ export async function getLocalAnswers(sessionId) {
     .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 }
 
+export async function clearLocalBrowserCache() {
+  if (!("indexedDB" in window)) return;
+  await new Promise((resolve, reject) => {
+    const request = indexedDB.deleteDatabase(DB_NAME);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+    request.onblocked = () => resolve();
+  });
+}
+
 async function putSession(session) {
   const db = await openDb();
   await transaction(db, SESSION_STORE, "readwrite", (store) => store.put(session));

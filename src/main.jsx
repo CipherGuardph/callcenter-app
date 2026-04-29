@@ -4,11 +4,15 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
+import OrderPage from "./pages/OrderPage.jsx";
 import HistoryPage from "./pages/HistoryPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import PracticePage from "./pages/PracticePage.jsx";
 import SessionPage from "./pages/SessionPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import SubscriptionGate from "./components/SubscriptionGate.jsx";
+import AdminRoute from "./components/AdminRoute.jsx";
+import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
 import "./styles.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -19,11 +23,17 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="/" element={<App />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="login" element={<LoginPage />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="practice" element={<PracticePage />} />
-            <Route path="practice/session/:sessionId" element={<SessionPage />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="history" element={<HistoryPage />} />
+            <Route path="order" element={<OrderPage />} />
+            <Route element={<SubscriptionGate />}>
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="practice" element={<PracticePage />} />
+              <Route path="practice/session/:sessionId" element={<SessionPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="history" element={<HistoryPage />} />
+              </Route>
+            </Route>
+            <Route element={<AdminRoute />}>
+              <Route path="admin" element={<AdminDashboardPage />} />
             </Route>
           </Route>
         </Routes>

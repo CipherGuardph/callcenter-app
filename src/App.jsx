@@ -1,8 +1,9 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext.jsx";
+import { ADMIN_EMAIL } from "./services/membership.js";
 
 export default function App() {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, membership } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -23,9 +24,11 @@ export default function App() {
         <nav className="nav-links" aria-label="Main navigation">
           <NavLink to="/dashboard">Dashboard</NavLink>
           <NavLink to="/practice">Practice</NavLink>
+          <NavLink to="/order">Order</NavLink>
           {currentUser ? (
             <>
               <NavLink to="/history">History</NavLink>
+              {currentUser.email === ADMIN_EMAIL || membership?.role === "admin" ? <NavLink to="/admin">Admin</NavLink> : null}
               <button className="link-button" onClick={handleLogout} type="button">
                 Log out
               </button>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PracticeHistory from "../components/PracticeHistory.jsx";
+import SubscriptionStatusBanner from "../components/SubscriptionStatusBanner.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { interviewQuestions } from "../data/questions.js";
 import { createLocalSession } from "../services/localSessions.js";
@@ -70,6 +71,7 @@ export default function DashboardPage() {
           {starting ? "Starting..." : "Start Practice"}
         </button>
       </section>
+      <SubscriptionStatusBanner />
       {error ? <p className="error-text">{error}</p> : null}
       <section className="summary-grid">
         <div className="metric">

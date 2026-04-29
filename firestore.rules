@@ -9,24 +9,29 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == uid;
     }
 
+    function isAdmin() {
+      return signedIn() && request.auth.token.email == "cjquintoph@gmail.com";
+    }
+
     function ownsSession(sessionId) {
       return signedIn()
         && get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
     }
 
     match /users/{uid} {
-      allow read, create, update: if ownsUserDoc(uid);
-      allow delete: if false;
+      allow read, create, update: if ownsUserDoc(uid) || isAdmin();
+      allow delete: if ownsUserDoc(uid) || isAdmin();
     }
 
     match /sessions/{sessionId} {
       allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, update: if signedIn() && resource.data.userId == request.auth.uid;
-      allow delete: if false;
+      allow read, update: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
 
       match /answers/{answerId} {
-        allow create, read: if ownsSession(sessionId);
-        allow update, delete: if false;
+        allow create: if ownsSession(sessionId);
+        allow read, delete: if ownsSession(sessionId) || isAdmin();
+        allow update: if false;
       }
     }
   }

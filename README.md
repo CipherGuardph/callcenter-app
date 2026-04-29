@@ -1,6 +1,6 @@
 # BPO Interview Simulator
 
-A web-based interview practice app for beginners preparing for BPO and call center interviews. The MVP uses static interview questions, browser voice tools, local browser-cached recordings, and optional Firebase account saving at the end of practice.
+A web-based interview practice app for beginners preparing for BPO and call center interviews. The MVP uses static interview questions, browser voice tools, local browser-cached recordings, a 1-day trial after signup, and optional Firebase account saving at the end of practice.
 
 Follow CipherGuardph: https://www.facebook.com/Cipherguardph
 
@@ -16,6 +16,8 @@ Follow CipherGuardph: https://www.facebook.com/Cipherguardph
 - Browser MediaRecorder API for microphone recording
 - Browser MediaDevices API for microphone permission prompts
 - IndexedDB for local browser-only recording cache before account save
+- Firebase Auth trial and subscription state stored in Firestore
+- Firebase Storage payment receipt uploads
 - CSS custom properties and responsive CSS for the dark mobile-first UI
 - ESLint 9 with React and React Hooks lint rules
 - Cloudflare Pages-compatible static build output
@@ -24,7 +26,9 @@ Follow CipherGuardph: https://www.facebook.com/Cipherguardph
 
 - Optional email/password authentication at the end of practice
 - Public dashboard, practice, and local session summary pages
+- Subscription-aware order page with QR-code payment
 - Protected cloud history page
+- Admin dashboard limited to `cjquintoph@gmail.com`
 - One-question-at-a-time interview simulator
 - Text-to-speech question playback
 - 90-second countdown timer with progress bar
@@ -32,6 +36,9 @@ Follow CipherGuardph: https://www.facebook.com/Cipherguardph
 - Local browser cache for answer recordings during practice
 - Optional Firebase Storage upload for answer recordings after login
 - Optional Firestore records for sessions and answers after login
+- Receipt upload with auto-approval for monthly subscription activation
+- Automatic trial and subscription expiry prompts
+- Best-effort account deletion after the deletion countdown ends
 - Suggested answers, speaking structure, tips, and common mistakes
 - Session history with recordings and summary metrics
 - Static local seed questions that can later move to Firestore
@@ -52,8 +59,10 @@ Firebase files in this repo:
 - `firestore.indexes.json` adds the sessions query index
 - `storage.rules` protects recording uploads and playback
 - `firebase-security-rules.md` documents the rules example
+- `public/img/` contains the QR code images used on the order page
 
 Practice recordings are not uploaded during the interview. They are cached locally in the user's browser first. On the final session summary, the user can choose to log in and save the completed session to Firebase.
+Trial starts on signup and lasts 1 day. After the trial ends, the app routes the user to the order page to upload a receipt and activate the monthly plan.
 
 ## Environment Variables
 
@@ -123,6 +132,7 @@ Firebase setup requirements:
 - Enable Firebase Storage
 - Add production and preview deployment domains to Firebase Auth authorized domains
 - Deploy Firestore rules, indexes, and Storage rules when they change
+- Use `cjquintoph@gmail.com` as the admin login for the admin dashboard
 
 ## Browser Support Notes
 
