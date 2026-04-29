@@ -81,11 +81,12 @@ export async function uploadAnswerAudio({ blob, userId, sessionId, question, dur
   ensureFirebase();
   validateAudioBlob(blob);
 
-  const extension = blob.type.includes("mp4") ? "mp4" : blob.type.includes("ogg") ? "ogg" : "webm";
+  const contentType = getUploadContentType(blob);
+  const extension = contentType.includes("mp4") ? "mp4" : contentType.includes("ogg") ? "ogg" : "webm";
   const storagePath = `interview-recordings/${userId}/${sessionId}/${question.id}.${extension}`;
   const audioRef = ref(storage, storagePath);
   const uploadResult = await uploadBytes(audioRef, blob, {
-    contentType: blob.type || "audio/webm",
+    contentType,
     customMetadata: {
       sessionId,
       questionId: question.id,
@@ -112,9 +113,16 @@ function validateAudioBlob(blob) {
   if (!blob) throw new Error("No recording found. Please record your answer first.");
   if (blob.size > MAX_AUDIO_BYTES) throw new Error("Recording is too large. Please keep answers under 15 MB.");
   const normalizedType = blob.type.split(";")[0].toLowerCase();
-  if (normalizedType && !ALLOWED_AUDIO_TYPES.includes(normalizedType)) {
-    throw new Error("Unsupported audio format. Please record again using your browser microphone.");
+  const isBrowserWebmAudio = normalizedType === "video/webm";
+  if (normalizedType && !ALLOWED_AUDIO_TYPES.includes(normalizedType) && !isBrowserWebmAudio) {
+    throw new Error(`Unsupported audio format (${blob.type}). Please record again using your browser microphone.`);
   }
+}
+
+function getUploadContentType(blob) {
+  const normalizedType = blob.type.split(";")[0].toLowerCase();
+  if (normalizedType === "video/webm") return "audio/webm";
+  return normalizedType || "audio/webm";
 }
 
 function ensureFirebase() {
