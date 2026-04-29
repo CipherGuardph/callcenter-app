@@ -20,16 +20,20 @@ export default function App() {
             <small>Practice simulator</small>
           </span>
         </NavLink>
-        {currentUser ? (
-          <nav className="nav-links" aria-label="Main navigation">
-            <NavLink to="/dashboard">Dashboard</NavLink>
-            <NavLink to="/practice">Practice</NavLink>
-            <NavLink to="/history">History</NavLink>
-            <button className="link-button" onClick={handleLogout} type="button">
-              Log out
-            </button>
-          </nav>
-        ) : null}
+        <nav className="nav-links" aria-label="Main navigation">
+          <NavLink to="/dashboard">Dashboard</NavLink>
+          <NavLink to="/practice">Practice</NavLink>
+          {currentUser ? (
+            <>
+              <NavLink to="/history">History</NavLink>
+              <button className="link-button" onClick={handleLogout} type="button">
+                Log out
+              </button>
+            </>
+          ) : (
+            <NavLink to="/login">Log in</NavLink>
+          )}
+        </nav>
       </header>
       <main className="page">
         <Outlet />

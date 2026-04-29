@@ -1,6 +1,6 @@
 # BPO Interview Simulator
 
-A web-based interview practice app for beginners preparing for BPO and call center interviews. The MVP uses static interview questions, browser voice tools, Firebase user accounts, Firestore session history, and Firebase Storage recording uploads.
+A web-based interview practice app for beginners preparing for BPO and call center interviews. The MVP uses static interview questions, browser voice tools, local browser-cached recordings, and optional Firebase account saving at the end of practice.
 
 Follow CipherGuardph: https://www.facebook.com/Cipherguardph
 
@@ -15,20 +15,23 @@ Follow CipherGuardph: https://www.facebook.com/Cipherguardph
 - Browser SpeechSynthesis API for question voice playback
 - Browser MediaRecorder API for microphone recording
 - Browser MediaDevices API for microphone permission prompts
+- IndexedDB for local browser-only recording cache before account save
 - CSS custom properties and responsive CSS for the dark mobile-first UI
 - ESLint 9 with React and React Hooks lint rules
 - Cloudflare Pages-compatible static build output
 
 ## Core Features
 
-- Email/password authentication
-- Protected dashboard, practice, and history pages
+- Optional email/password authentication at the end of practice
+- Public dashboard, practice, and local session summary pages
+- Protected cloud history page
 - One-question-at-a-time interview simulator
 - Text-to-speech question playback
 - 90-second countdown timer with progress bar
 - Microphone recording with permission and unsupported-browser handling
-- Firebase Storage upload for answer recordings
-- Firestore records for sessions and answers
+- Local browser cache for answer recordings during practice
+- Optional Firebase Storage upload for answer recordings after login
+- Optional Firestore records for sessions and answers after login
 - Suggested answers, speaking structure, tips, and common mistakes
 - Session history with recordings and summary metrics
 - Static local seed questions that can later move to Firestore
@@ -49,6 +52,8 @@ Firebase files in this repo:
 - `firestore.indexes.json` adds the sessions query index
 - `storage.rules` protects recording uploads and playback
 - `firebase-security-rules.md` documents the rules example
+
+Practice recordings are not uploaded during the interview. They are cached locally in the user's browser first. On the final session summary, the user can choose to log in and save the completed session to Firebase.
 
 ## Environment Variables
 
@@ -129,3 +134,5 @@ Recording depends on:
 - `MediaRecorder`
 
 Some browsers produce microphone recordings as `audio/webm;codecs=opus` or `video/webm;codecs=opus`. The app normalizes supported WebM recordings before upload.
+
+Local recordings use IndexedDB and remain tied to the same browser profile. Clearing browser site data can remove unsaved local sessions.

@@ -19,10 +19,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="/" element={<App />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="login" element={<LoginPage />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="practice" element={<PracticePage />} />
+            <Route path="practice/session/:sessionId" element={<SessionPage />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="practice" element={<PracticePage />} />
-              <Route path="practice/session/:sessionId" element={<SessionPage />} />
               <Route path="history" element={<HistoryPage />} />
             </Route>
           </Route>

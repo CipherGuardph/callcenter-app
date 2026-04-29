@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import PracticeHistory from "../components/PracticeHistory.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { interviewQuestions } from "../data/questions.js";
-import { createPracticeSession, getUserSessions } from "../services/sessions.js";
+import { createLocalSession } from "../services/localSessions.js";
+import { getUserSessions } from "../services/sessions.js";
 
 export default function DashboardPage() {
   const { currentUser } = useAuth();
@@ -15,6 +16,13 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let mounted = true;
+    if (!currentUser) {
+      setSessions([]);
+      setLoading(false);
+      return undefined;
+    }
+
+    setLoading(true);
     getUserSessions(currentUser.uid, 5)
       .then((items) => {
         if (mounted) setSessions(items);
@@ -28,7 +36,7 @@ export default function DashboardPage() {
     return () => {
       mounted = false;
     };
-  }, [currentUser.uid]);
+  }, [currentUser]);
 
   const completedSessions = sessions.filter((session) => session.status === "completed");
   const progress = useMemo(() => {
@@ -41,10 +49,7 @@ export default function DashboardPage() {
     setStarting(true);
     setError("");
     try {
-      const sessionId = await createPracticeSession({
-        userId: currentUser.uid,
-        totalQuestions: interviewQuestions.length
-      });
+      const sessionId = await createLocalSession(interviewQuestions.length);
       navigate(`/practice?sessionId=${sessionId}`);
     } catch (startError) {
       setError(startError.message);
@@ -59,7 +64,7 @@ export default function DashboardPage() {
         <div>
           <span className="eyebrow">Welcome back</span>
           <h1>Build confidence before your first BPO interview.</h1>
-          <p>Practice common questions, record your answers, and review your progress after each session.</p>
+          <p>Practice common questions first. Your recordings stay in this browser until you choose to save them to an account.</p>
         </div>
         <button className="primary-button hero-action" onClick={startPractice} disabled={starting} type="button">
           {starting ? "Starting..." : "Start Practice"}
@@ -103,7 +108,11 @@ export default function DashboardPage() {
         <div className="section-heading">
           <h2>Recent sessions</h2>
         </div>
-        <PracticeHistory sessions={sessions} loading={loading} emptyText="Start your first practice session to see history here." />
+        <PracticeHistory
+          sessions={sessions}
+          loading={loading}
+          emptyText={currentUser ? "Start your first saved practice session to see history here." : "Log in after practice if you want to save sessions to cloud history."}
+        />
       </section>
     </div>
   );

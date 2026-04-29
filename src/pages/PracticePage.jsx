@@ -3,13 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import InterviewCard from "../components/InterviewCard.jsx";
 import RecorderControls from "../components/RecorderControls.jsx";
 import SuggestedAnswerPanel from "../components/SuggestedAnswerPanel.jsx";
-import { useAuth } from "../context/AuthContext.jsx";
 import { interviewQuestions } from "../data/questions.js";
 import { useMediaRecorder } from "../hooks/useMediaRecorder.js";
-import { completePracticeSession, createPracticeSession, uploadAnswerAudio } from "../services/sessions.js";
+import { completeLocalSession, createLocalSession, saveLocalAnswer } from "../services/localSessions.js";
 
 export default function PracticePage() {
-  const { currentUser } = useAuth();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [sessionId, setSessionId] = useState(searchParams.get("sessionId"));
@@ -29,10 +27,7 @@ export default function PracticePage() {
 
   const ensureSession = async () => {
     if (sessionId) return sessionId;
-    const newSessionId = await createPracticeSession({
-      userId: currentUser.uid,
-      totalQuestions: interviewQuestions.length
-    });
+    const newSessionId = await createLocalSession(interviewQuestions.length);
     setSessionId(newSessionId);
     window.history.replaceState(null, "", `/practice?sessionId=${newSessionId}`);
     return newSessionId;
@@ -55,9 +50,8 @@ export default function PracticePage() {
     setError("");
     try {
       const activeSessionId = await ensureSession();
-      await uploadAnswerAudio({
+      await saveLocalAnswer({
         blob: recorder.audioBlob,
-        userId: currentUser.uid,
         sessionId: activeSessionId,
         question,
         durationSeconds: recorder.durationSeconds
@@ -80,7 +74,7 @@ export default function PracticePage() {
 
     if (isLastQuestion) {
       const activeSessionId = await ensureSession();
-      await completePracticeSession({
+      await completeLocalSession({
         sessionId: activeSessionId,
         answeredQuestions: answeredCount + (hasRecording ? 1 : 0),
         durationSeconds: elapsedSeconds + (hasRecording ? recorder.durationSeconds : 0),
@@ -99,7 +93,7 @@ export default function PracticePage() {
     recorder.resetRecording();
     if (isLastQuestion) {
       if (sessionId) {
-        completePracticeSession({
+        completeLocalSession({
           sessionId,
           answeredQuestions: answeredCount,
           durationSeconds: elapsedSeconds,

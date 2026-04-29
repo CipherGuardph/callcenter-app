@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function LoginPage() {
@@ -10,7 +10,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const destination = location.state?.from?.pathname || "/dashboard";
+  const [searchParams] = useSearchParams();
+  const destination = searchParams.get("redirect") || location.state?.from?.pathname || "/dashboard";
 
   if (currentUser) return <Navigate to={destination} replace />;
 

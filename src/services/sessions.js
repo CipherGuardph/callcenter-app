@@ -109,6 +109,36 @@ export async function uploadAnswerAudio({ blob, userId, sessionId, question, dur
   return { audioUrl, storagePath };
 }
 
+export async function saveLocalSessionToCloud({ userId, localSession, answers }) {
+  const sessionId = await createPracticeSession({
+    userId,
+    totalQuestions: localSession.totalQuestions || answers.length
+  });
+
+  for (const answer of answers) {
+    await uploadAnswerAudio({
+      blob: answer.blob,
+      userId,
+      sessionId,
+      question: {
+        id: answer.questionId,
+        text: answer.questionText,
+        category: answer.category
+      },
+      durationSeconds: answer.durationSeconds || 0
+    });
+  }
+
+  await completePracticeSession({
+    sessionId,
+    answeredQuestions: answers.length,
+    durationSeconds: localSession.durationSeconds || answers.reduce((total, answer) => total + (answer.durationSeconds || 0), 0),
+    categories: localSession.categories || answers.map((answer) => answer.category)
+  });
+
+  return sessionId;
+}
+
 function validateAudioBlob(blob) {
   if (!blob) throw new Error("No recording found. Please record your answer first.");
   if (blob.size > MAX_AUDIO_BYTES) throw new Error("Recording is too large. Please keep answers under 15 MB.");
