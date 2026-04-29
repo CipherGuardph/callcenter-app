@@ -111,7 +111,8 @@ export async function uploadAnswerAudio({ blob, userId, sessionId, question, dur
 function validateAudioBlob(blob) {
   if (!blob) throw new Error("No recording found. Please record your answer first.");
   if (blob.size > MAX_AUDIO_BYTES) throw new Error("Recording is too large. Please keep answers under 15 MB.");
-  if (blob.type && !ALLOWED_AUDIO_TYPES.includes(blob.type)) {
+  const normalizedType = blob.type.split(";")[0].toLowerCase();
+  if (normalizedType && !ALLOWED_AUDIO_TYPES.includes(normalizedType)) {
     throw new Error("Unsupported audio format. Please record again using your browser microphone.");
   }
 }
