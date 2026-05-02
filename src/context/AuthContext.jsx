@@ -80,16 +80,6 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (!firebaseReady || !currentUser) return undefined;
-
-    const heartbeat = window.setInterval(() => {
-      refreshMembership().catch(() => {});
-    }, 60000);
-
-    return () => window.clearInterval(heartbeat);
-  }, [currentUser, refreshMembership]);
-
   const signUp = useCallback(async ({ name, email, password }) => {
     if (!firebaseReady) throw new Error("Firebase is not configured yet.");
     const credential = await createUserWithEmailAndPassword(auth, email, password);
@@ -151,6 +141,16 @@ export function AuthProvider({ children }) {
   const resetLocalCacheForDeletion = useCallback(async () => {
     await clearLocalBrowserCache();
   }, []);
+
+  useEffect(() => {
+    if (!firebaseReady || !currentUser) return undefined;
+
+    const heartbeat = window.setInterval(() => {
+      refreshMembership().catch(() => {});
+    }, 60000);
+
+    return () => window.clearInterval(heartbeat);
+  }, [currentUser, refreshMembership]);
 
   const value = {
     currentUser,
